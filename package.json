@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run build && node index.js",
     "build": "webpack -c ./cloud-code/webpack.config.js  --mode=production && webpack -c ./cloud-code1/webpack.sdk.config.js  --mode=production",
-    "dev": "webpack serve -c ./cloud-code/webpack.config.js --mode=development"
+    "dev": "webpack serve -c ./cloud-code/webpack.config.js --mode=development & webpack serve -c ./cloud-code/webpack.sdk.config.js --mode=development"
   },
   "bin": {
     "start_nodes": "index.js"

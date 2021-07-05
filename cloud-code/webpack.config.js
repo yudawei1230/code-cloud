@@ -23,11 +23,11 @@ module.exports = {
       injectClient: false,
       proxy: {
         "/rsdk": {
-          target: "http://localhost:7832",
+          target: "http://127.0.0.1:7832",
           pathRewrite: { "^/rsdk": "" },
         },
         "/sdk.js": {
-          target: "http://localhost:7831",
+          target: "http://127.0.0.1:7831",
         },
       },
       headers: {
