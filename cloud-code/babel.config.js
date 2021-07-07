@@ -1,10 +1,10 @@
 module.exports = {
   "presets": [
-    "@babel/preset-env"
+    "@babel/preset-env",
   ],
   "plugins": [
-      ["@babel/plugin-transform-runtime", {
+    ["@babel/plugin-transform-runtime", {
           "corejs": 3
-      }]
+      }],
   ]
 }

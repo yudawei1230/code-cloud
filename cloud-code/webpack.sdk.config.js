@@ -6,12 +6,11 @@ module.exports = {
     entry: {
       sdk: resolve("./src/sdk/sdk.js"),
     },
-    // output: {
-    //   path: resolve("../file-base/dist/rsdk"),
-    // },
+    output: {
+      path: resolve("../file-base/dist/rsdk"),
+    },
     devServer: {
       port: 7831,
-      // contentBase: resolve('public'),
       headers: {
         // 保证子应用的资源支持跨域，在线上后需要保证子应用的资源在主应用的环境中加载不会存在跨域问题（**也需要限制范围注意安全问题**）
         'Access-Control-Allow-Origin': '*',

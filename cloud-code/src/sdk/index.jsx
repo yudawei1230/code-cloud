@@ -4,9 +4,9 @@ import cssPlugin from './plugins/css'
 import promisePlugin from './plugins/promise'
 import { MODULE_TYPE }  from '../config/const'
 import useCodeEditor from './codeEditor'
-
-window.r = r
-window.d = d
+import loadingImg from '../assets/loading.png'
+import logImg from '../assets/logo.png'
+import style from './index.css'
 
 export async function bootstrap(props) {
   console.log(props)
@@ -209,8 +209,26 @@ export async function mount({ onGlobalStateChange, container }) {
       )).editor
     }
   }
-  window.rsdk.exec('spotlight')
-  console.log(window)
+  const sdkReq = window.rsdk.exec('spotlight')
+  const [React, ReactDOM] = await rsdk.require(['react', 'react-dom'])
+  const { useEffect, useState} = React
+  const root = document.createElement('div')
+  root.setAttribute('id', 'root')
+  container.appendChild(root)
+  
+  function App () {
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+      sdkReq.then(setLoading.bind(null, false))
+    }, [])
+
+    return  <>
+      <style>{style.toString()}</style>
+      <img className={`${style.locals.img} ${loading ? style.locals.loading : ''}`} src={loading ? loadingImg : logImg}/>
+    </>
+  }
+  ReactDOM.render(<App/>, root)
 }
 
 /**

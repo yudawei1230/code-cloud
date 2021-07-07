@@ -1,5 +1,5 @@
 import { registerMicroApps, start, initGlobalState } from 'qiankun';
-import 'requirejs/require'
+
 const scriptAttr = [...document.scripts].find(v => v.hasAttribute('rsdk')).attributes
 function getAttr(key) {
   return scriptAttr[key] ? scriptAttr[key].value : null
@@ -7,23 +7,21 @@ function getAttr(key) {
 
 const sdkSrc = getAttr('src').replace(/[^\/]+$/, 'main.js')
 
-window.addEventListener('load', () => {
-  const el = document.createElement('div')
-  document.body.appendChild(el)
-  registerMicroApps([
-    {
-      name: process.env.npm_package_name,
-      entry: { scripts: [sdkSrc]},
-      container: el,
-      activeRule: () => true,
-    }
-  ]);
+const el = document.createElement('div')
+document.body.appendChild(el)
+registerMicroApps([
+  {
+    name: process.env.npm_package_name,
+    entry: { scripts: [sdkSrc]},
+    container: el,
+    activeRule: () => true,
+  }
+]);
 
-  initGlobalState({
-    origin: getAttr('data-origin')?.replace?.(/\/?$/, '')
-  })
-  // 启动 qiankun
-  start({
-    sandbox: {  experimentalStyleIsolation: true }
-  });
+initGlobalState({
+  origin: getAttr('data-origin')?.replace?.(/\/?$/, '')
 })
+// 启动 qiankun
+start({
+  sandbox: {  experimentalStyleIsolation: true }
+});

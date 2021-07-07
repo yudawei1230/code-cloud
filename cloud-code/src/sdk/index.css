@@ -1,0 +1,22 @@
+.img {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.loading {
+  animation: roll 1s linear infinite;
+}
+
+@keyframes roll {
+  from {
+    transform: rotate(0deg)
+  }
+  to {
+    transform: rotate(360deg)
+  }
+}
+

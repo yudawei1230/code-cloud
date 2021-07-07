@@ -4,10 +4,10 @@ const packageName = process.env.npm_package_name
 
 module.exports = {
     entry: {
-      main: resolve("./src/sdk/index.js"),
+      main: resolve("./src/sdk/index.jsx"),
     },
     output: {
-      // path: resolve("../file-base/dist/rsdk"),
+      path: resolve("../file-base/dist/rsdk"),
       library: `${packageName}-[name]`,
       libraryTarget: 'umd',
       jsonpFunction: `webpackJsonp_${packageName}`,
@@ -41,7 +41,7 @@ module.exports = {
     module: {
       rules: [
         {
-          test: /\.js?$/, // jsx/js文件的正则
+          test: /\.js|jsx?$/, // jsx/js文件的正则
           exclude: /node_modules/, // 排除 node_modules 文件夹
           use: {
             // loader 是 babel
@@ -51,10 +51,22 @@ module.exports = {
               babelrc: false,
               presets: [
                 // 添加 preset-react
+                "@babel/preset-react",
                 [require.resolve("@babel/preset-env")],
               ],
             },
           },
+        },
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: 'css-loader',
+              options: {
+                modules: true,
+              }
+            }
+          ]
         },
         {
           test: /requirejs/,
@@ -67,6 +79,10 @@ module.exports = {
             },
           },
         },
+        {
+          test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+          loader: 'url-loader',
+        }
       ],
     },
   }
