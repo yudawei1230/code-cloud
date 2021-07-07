@@ -4,8 +4,6 @@ import cssPlugin from './plugins/css'
 import promisePlugin from './plugins/promise'
 import { MODULE_TYPE }  from '../config/const'
 import useCodeEditor from './codeEditor'
-import loadingImg from '../assets/loading.png'
-import logImg from '../assets/logo.png'
 import style from './index.css'
 
 export async function bootstrap(props) {
@@ -222,10 +220,15 @@ export async function mount({ onGlobalStateChange, container }) {
     useEffect(() => {
       sdkReq.then(setLoading.bind(null, false))
     }, [])
-
+    const classStr= `${style.locals.img} ${loading ? style.locals.loading : ''}`
     return  <>
       <style>{style.toString()}</style>
-      <img className={`${style.locals.img} ${loading ? style.locals.loading : ''}`} src={loading ? loadingImg : logImg}/>
+      <div className={classStr}>
+      {loading 
+        ? <svg  t="1625627156257" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1271" width="200" height="200"><path d="M512 0c283.136 0 512 228.864 512 512s-228.864 512-512 512S0 795.136 0 512 228.864 0 512 0z m-0.9216 256.3584a254.976 254.976 0 1 0 254.976 254.9248 23.9104 23.9104 0 0 0-47.8208 0 207.104 207.104 0 1 1-38.0928-119.5008h-41.5744a23.9104 23.9104 0 1 0 0 47.8208h103.5264c13.2096 0 23.9104-10.752 23.9104-23.9104V320.1024a23.9104 23.9104 0 0 0-47.7696 0v42.9056a254.208 254.208 0 0 0-207.1552-106.6496z" fill="#3296FA" p-id="1272"></path></svg>
+        : <svg  t="1625627222679" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2902" width="200" height="200"><path d="M512 512m-512 0a512 512 0 1 0 1024 0 512 512 0 1 0-1024 0Z" fill="#409EFF" p-id="2903"></path><path d="M759.466667 420.977778C750.933333 305.777778 654.933333 214.044444 536.888889 214.044444c-88.177778 0-163.555556 51.2-200.533333 124.444445-123.733333 7.111111-221.866667 109.511111-221.866667 235.377778 0 66.133333 25.6 125.866667 66.844444 168.533333v-0.711111C363.377778 502.755556 597.333333 433.066667 597.333333 433.066667l-28.444444-21.333334 142.222222-28.444444-85.333333 92.444444-14.222222-28.444444c-320 169.244444-241.066667 327.822222-218.311112 362.666667h317.155556c110.933333-5.688889 198.4-93.155556 198.4-198.4 0.711111-89.6-62.577778-165.688889-149.333333-190.577778z" fill="#FFFFFF" p-id="2904"></path></svg>
+      }
+      </div>
     </>
   }
   ReactDOM.render(<App/>, root)

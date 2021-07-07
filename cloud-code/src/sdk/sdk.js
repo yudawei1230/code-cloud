@@ -7,21 +7,24 @@ function getAttr(key) {
 
 const sdkSrc = getAttr('src').replace(/[^\/]+$/, 'main.js')
 
-const el = document.createElement('div')
-document.body.appendChild(el)
-registerMicroApps([
-  {
-    name: process.env.npm_package_name,
-    entry: { scripts: [sdkSrc]},
-    container: el,
-    activeRule: () => true,
-  }
-]);
+if(self===top){ 
+  const el = document.createElement('div')
+  document.body.appendChild(el)
+  registerMicroApps([
+    {
+      name: process.env.npm_package_name,
+      entry: { scripts: [sdkSrc]},
+      container: el,
+      activeRule: () => true,
+    }
+  ]);
+  
+  initGlobalState({
+    origin: getAttr('data-origin')?.replace?.(/\/?$/, '')
+  })
+  // 启动 qiankun
+  start({
+    sandbox: {  experimentalStyleIsolation: true }
+  });
+}
 
-initGlobalState({
-  origin: getAttr('data-origin')?.replace?.(/\/?$/, '')
-})
-// 启动 qiankun
-start({
-  sandbox: {  experimentalStyleIsolation: true }
-});
