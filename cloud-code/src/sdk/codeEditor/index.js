@@ -1,5 +1,4 @@
 import useLanguage from './languages'
-
 async function openEditor (rsdk, dom, options) { 
   rsdk.config({
     paths: {
@@ -7,7 +6,6 @@ async function openEditor (rsdk, dom, options) {
     },
     'vs/nls': { availableLanguages: { '*': 'zh-cn' } }
   });
-  
   await rsdk.require(['vs/editor/editor.main']);
   //创建编辑器
   const editor = monaco.editor.create(dom, {
@@ -17,13 +15,7 @@ async function openEditor (rsdk, dom, options) {
     ...options
   });
 
-  // 引用 ts 类型库
-  monaco.languages.typescript.typescriptDefaults.addExtraLib(`
 
-  export interface rsdk {
-    isAcceptable(s: string): boolean;
-  }
-  `);
   return { monaco, editor }
 }
 
@@ -37,16 +29,16 @@ export default function useCodeEditor (rsdk) {
       height: '500px', 
       ...editorStyle
     }
-    const [React, { Modal, message }] = await rsdk.require(['react', 'antd'])
+    const [React, { Modal, message }, utils] = await rsdk.require(['react', 'antd', 'utils'])
     return new Promise(resolve => {
-  
+      const modalWrapper = utils.createEmptyDiv()
       const modal = Modal.confirm({ 
         title: '编辑模块',
         width: '1200px', 
         height: '600px', 
         ...modalStyle, 
         ...modalOptions ,
-        getContainer: () => rsdk.container,
+        getContainer: () => modalWrapper,
         modalRender(props) {
           const containerRef = React.useRef(null)
           React.useEffect(() => {

@@ -7,24 +7,38 @@ function getAttr(key) {
 
 const sdkSrc = getAttr('src').replace(/[^\/]+$/, 'main.js')
 
+
 if(self===top){ 
   const el = document.createElement('div')
-  document.body.appendChild(el)
-  registerMicroApps([
-    {
-      name: process.env.npm_package_name,
-      entry: { scripts: [sdkSrc]},
-      container: el,
-      activeRule: () => true,
-    }
-  ]);
-  
-  initGlobalState({
-    origin: getAttr('data-origin')?.replace?.(/\/?$/, '')
-  })
-  // 启动 qiankun
-  start({
-    sandbox: {  experimentalStyleIsolation: true }
-  });
-}
+  const initTimer = setInterval(() => {
+    if(!document.body) return 
+    clearInterval(initTimer)
+    document.body.appendChild(el)
 
+    const rsdkState = initGlobalState({})
+    
+    rsdkState.onGlobalStateChange((state, prev) => {
+      window.rsdk = state
+    })
+
+    registerMicroApps([
+      {
+        name: process.env.npm_package_name,
+        entry: { scripts: [sdkSrc]},
+        container: el,
+        activeRule: () => true,
+        props: {
+          origin: getAttr('data-origin')?.replace?.(/\/?$/, ''),
+          setRsdkState: rsdkState.setGlobalState
+        }
+      }
+    ]);
+
+    // 启动 qiankun
+    start({
+      sandbox: {  strictStyleIsolation: true }
+    });
+  }, 50)
+
+}
+  

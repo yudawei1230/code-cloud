@@ -6,11 +6,10 @@ import { MODULE_TYPE }  from '../config/const'
 import useCodeEditor from './codeEditor'
 import style from './index.css'
 
-export async function bootstrap(props) {
-  console.log(props)
-}
+export async function bootstrap() {}
 
-export async function mount({ onGlobalStateChange, container }) {
+export async function mount(props) {
+  const { setRsdkState, container, origin } = props
   textPlugin(d, r)
   cssPlugin(d, r)
   promisePlugin(d, r)
@@ -40,11 +39,6 @@ export async function mount({ onGlobalStateChange, container }) {
   function getAttr(key) {
     return scriptAttr[key] ? scriptAttr[key].value : null
   }
-
-  let origin = getAttr('data-origin')?.replace?.(/\/?$/, '')
-  onGlobalStateChange((val) => {
-    origin = origin || val.origin
-  }, true)
 
   function request (url) {
     if(typeof url !== 'string') throw new Error('url expect to be string')
@@ -152,9 +146,7 @@ export async function mount({ onGlobalStateChange, container }) {
     return d(deps, callback)
   }
 
-  define('rsdk', () => window.rsdk)
-
-  window.rsdk = {
+  window.rsdk =  {
     origin,
     container,
     get context() {
@@ -207,6 +199,9 @@ export async function mount({ onGlobalStateChange, container }) {
       )).editor
     }
   }
+  define('rsdk', () => window.rsdk)
+  setRsdkState(window.rsdk)
+  
   const sdkReq = window.rsdk.exec('spotlight')
   const [React, ReactDOM] = await rsdk.require(['react', 'react-dom'])
   const { useEffect, useState} = React
@@ -237,7 +232,5 @@ export async function mount({ onGlobalStateChange, container }) {
 /**
  * 应用每次 切出/卸载 会调用的方法，通常在这里我们会卸载微应用的应用实例
  */
-export  function unmount(props) {
-  console.log(props)
-}
+export  function unmount() {}
 
