@@ -9,7 +9,7 @@ import style from './index.css'
 export async function bootstrap() {}
 
 export async function mount(props) {
-  const { setRsdkState, container, origin } = props
+  const { setRsdkState, container, origin, inIframe } = props
   textPlugin(d, r)
   cssPlugin(d, r)
   promisePlugin(d, r)
@@ -20,7 +20,7 @@ export async function mount(props) {
 
   const ignoreDeps = ['require', 'exports', 'rsdk']
   r.config({
-      waitSeconds: 20
+      waitSeconds: 0
   })
   function load(url, { exportsKeys, noCache }) {
     if(!url) return
@@ -33,11 +33,6 @@ export async function mount(props) {
         return Array.isArray(exportsKeys) ? exportsKeys.reduce((obj, key) => ({ ...obj, [key]: window[key]}), {}) : window[exportsKeys]
       })
       .finally(() => noCache && r.undef(url))
-  }
-
-  const scriptAttr = [...document.scripts][document.scripts.length -1].attributes
-  function getAttr(key) {
-    return scriptAttr[key] ? scriptAttr[key].value : null
   }
 
   function request (url) {
@@ -173,6 +168,13 @@ export async function mount(props) {
       const open = useCodeEditor(rsdk)
       let editor
       const info = await rsdk.getModuleInfo(name)
+      if(!info.name) {
+        const [{ message }, { createEmptyDiv }] = await rsdk.require(['antd', 'utils'])
+        message.config({
+          getContainer: () => createEmptyDiv()
+        })
+        return message.error(`查询不到该模块信息「${name}」。`)
+      }
       const onSave = async () => {
         if(!editor) return
         const [Babel] = await rsdk.require(['babel'])
@@ -202,7 +204,7 @@ export async function mount(props) {
   define('rsdk', () => window.rsdk)
   setRsdkState(window.rsdk)
   
-  const sdkReq = window.rsdk.exec('spotlight')
+  const sdkReq = window.rsdk.exec('spotlight', { inIframe })
   const [React, ReactDOM] = await rsdk.require(['react', 'react-dom'])
   const { useEffect, useState} = React
   const root = document.createElement('div')
@@ -216,6 +218,8 @@ export async function mount(props) {
       sdkReq.then(setLoading.bind(null, false))
     }, [])
     const classStr= `${style.locals.img} ${loading ? style.locals.loading : ''}`
+    
+    if(inIframe) return <></>
     return  <>
       <style>{style.toString()}</style>
       <div className={classStr}>
