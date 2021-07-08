@@ -129,7 +129,7 @@ export default (rsdk, type, comments = []) => {
     },
     [CodeType.js]: {
       defaultValue: '',
-      language: 'typescript',
+      language: 'javascript',
       comment: annotate(comments),
     },
   };
