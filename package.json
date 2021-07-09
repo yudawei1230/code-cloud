@@ -5,8 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node index.js",
-    "build": "webpack -c ./cloud-code/webpack.config.js  --mode=production && webpack -c ./cloud-code/webpack.sdk.config.js  --mode=production",
-    "dev": "webpack serve -c ./cloud-code/webpack.config.js --mode=development & webpack serve -c ./cloud-code/webpack.sdk.config.js --mode=development"
+    "build": "npm run build-main &&  npm run build-sdk && npm run build-console",
+    "build-main": "webpack -c ./cloud-code/webpack.config.js  --mode=production",
+    "build-sdk": "webpack -c ./cloud-code/webpack.sdk.config.js  --mode=production",
+    "build-console": "webpack -c ./cloud-code/webpack.console.config.js  --mode=production",
+    "dev": "npm run dev-main & npm run dev-sdk",
+    "dev-main": "webpack serve -c ./cloud-code/webpack.config.js  --mode=development",
+    "dev-sdk": "webpack serve -c ./cloud-code/webpack.sdk.config.js  --mode=development"
   },
   "bin": {
     "start_nodes": "index.js"
@@ -15,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@koa/router": "^10.0.0",
+    "eruda-webpack-plugin": "^1.2.0",
     "flat-cache": "^3.0.4",
     "koa": "^2.13.1",
     "koa-mount": "^4.0.0",
