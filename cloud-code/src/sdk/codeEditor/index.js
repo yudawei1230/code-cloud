@@ -19,7 +19,7 @@ async function openEditor (rsdk, dom, options) {
   return { monaco, editor }
 }
 
-export default function useCodeEditor (rsdk) {
+export default function useCodeEditor (rsdk, { REACT, ANTD }) {
   return  async (modalOptions = {}, editorOptions= {}) => {
     const { modalStyle = {} } = modalOptions
     const editorStyle = editorOptions.editorStyle
@@ -29,9 +29,14 @@ export default function useCodeEditor (rsdk) {
       height: '500px', 
       ...editorStyle
     }
-    const [React, { Modal, message }, utils] = await rsdk.require(['react', 'antd', 'utils'])
+    const [React] = await REACT
+    const { useRef, useEffect } = React
+    const [{ Modal, message } ]= await ANTD
+    
     return new Promise(resolve => {
-      const modalWrapper = utils.createEmptyDiv()
+      const modalWrapper = document.createElement("div");
+      rsdk.container.appendChild(modalWrapper)
+
       const modal = Modal.confirm({ 
         title: '编辑模块',
         width: '1200px', 
@@ -39,9 +44,9 @@ export default function useCodeEditor (rsdk) {
         ...modalStyle, 
         ...modalOptions ,
         getContainer: () => modalWrapper,
-        modalRender(props) {
-          const containerRef = React.useRef(null)
-          React.useEffect(() => {
+        modalRender(children) {
+          const containerRef = useRef(null)
+          useEffect(() => {
             const content = containerRef.current.querySelector('.ant-modal-confirm-content')
             const languageOptions = useLanguage(rsdk, 'js')
             Object.assign(content.style, style)
@@ -64,8 +69,8 @@ export default function useCodeEditor (rsdk) {
               resolve( { monaco, editor, modal })
             })
           }, [])
-
-          return React.createElement('div', { ref: containerRef }, props)
+          
+          return <div ref={containerRef} children={children}/> 
         }
       })
     })

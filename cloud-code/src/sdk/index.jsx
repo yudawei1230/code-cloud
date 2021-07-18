@@ -2,7 +2,7 @@ import { require as r, define as d } from 'requirejs'
 import textPlugin from './plugins/text'
 import cssPlugin from './plugins/css'
 import promisePlugin from './plugins/promise'
-import { MODULE_TYPE }  from '../config/const'
+import { MODULE_TYPE, CDN }  from '../config/const'
 import useCodeEditor from './codeEditor'
 import style from './index.css'
 
@@ -20,8 +20,10 @@ export async function mount(props) {
 
   const ignoreDeps = ['require', 'exports', 'rsdk']
   r.config({
-      waitSeconds: 0
+    paths: CDN,
+    waitSeconds: 0
   })
+  
   function load(url, { exportsKeys, noCache }) {
     if(!url) return
     return new Promise((resolve, reject) => r([url], resolve, reject))
@@ -77,7 +79,7 @@ export async function mount(props) {
     const keys = Object.keys(rsdk.context.config.paths)
     if(keys.some(p => new RegExp(`^${p}/`).test(name))) return { name }
     if(['require', 'exports'].includes(name) || rsdk.context.registry[name]) return {name}
-    if(paths[name] || !/^(?!https?:\/\/)/.test(name)) {
+    if(paths[name] || !/^(?!https?:\/\/)/.test(name) || name.includes('!')) {
       const extraInfo = shim[name]?.extraInfo || {}
       return { name, ...extraInfo }
     }
@@ -141,6 +143,8 @@ export async function mount(props) {
     return d(deps, callback)
   }
 
+  let REACT, ANTD;
+  
   window.rsdk =  {
     origin,
     container,
@@ -165,13 +169,15 @@ export async function mount(props) {
     },
     exec: (modules, ...options) => rsdk.require(modules).then(data => data?.[0] instanceof Function ? data[0](...options) : data),
     editModule: async function (name) {
-      const open = useCodeEditor(rsdk)
+      const open = useCodeEditor(rsdk, { REACT, ANTD })
       let editor
       const info = await rsdk.getModuleInfo(name)
       if(!info.name) {
-        const [{ message }, { createEmptyDiv }] = await rsdk.require(['antd', 'utils'])
+        const msgWrapper = document.createElement("div");
+        rsdk.container.appendChild(dom)
+        const [{ message }] = await ANTD
         message.config({
-          getContainer: () => createEmptyDiv()
+          getContainer: () => msgWrapper
         })
         return message.error(`查询不到该模块信息「${name}」。`)
       }
@@ -202,11 +208,15 @@ export async function mount(props) {
     }
   }
   define('rsdk', () => window.rsdk)
+
+  REACT = rsdk.require(['react', 'react-dom'])
+  ANTD = rsdk.require(['antd', 'css!antd-css'])
+
   setRsdkState(window.rsdk)
   
   const sdkReq = window.rsdk.exec('spotlight', { inIframe })
-  const [React, ReactDOM] = await rsdk.require(['react', 'react-dom'])
-  const { useEffect, useState} = React
+  const [React, ReactDOM] = await REACT
+  const { useEffect, useState } = React
   const root = document.createElement('div')
   root.setAttribute('id', 'root')
   container.appendChild(root)

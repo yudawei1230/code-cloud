@@ -98,7 +98,7 @@ define('css',['module'],  function() {
       var link = document.createElement('link');
       link.type = 'text/css';
       link.rel = 'stylesheet';
-     
+      
       if (useOnload && !window.__POWERED_BY_QIANKUN__)
         link.onload = function() {
           link.onload = function() {};
@@ -107,17 +107,19 @@ define('css',['module'],  function() {
         }
       else
         var loadInterval = setInterval(function() {
+          if(window.__POWERED_BY_QIANKUN__) {
+            // qiankun 开启 strictStyleIsolation 在shadow dom中加载style
+            if(window.rsdk && window.rsdk.container) {
+              const styleLength = window.rsdk.container.querySelectorAll(`link[href="${link.href}"]`).length
+              if(styleLength > 0) return callback();
+            }
+          }
           for (var i = 0; i < document.styleSheets.length; i++) {
             var sheet = document.styleSheets[i];
             if(window.__POWERED_BY_QIANKUN__) {
               // qiankun 开启 strictStyleIsolation 修改样式选择器
               if(sheet.ownerNode.getAttribute('data-qiankun-href') === link.href) {
                 return callback();
-              }
-              // qiankun 开启 strictStyleIsolation 在shadow dom中加载style
-              if(window.rsdk && window.rsdk.container) {
-                const styleLength = window.rsdk.container.querySelectorAll(`link[href="${link.href}"]`).length
-                if(styleLength > 0) return callback();
               }
             }
             if (sheet.href == link.href) {

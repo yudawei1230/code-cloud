@@ -19,7 +19,7 @@ exports.setModules = (ctx) => {
   if(moduleInfo === undefined) {
     return ctx.error('不存在该模块')
   }
-  ctx.db.modules.set(name, { ...query })
+  ctx.db.modules.set(name, { ...moduleInfo, ...query })
   ctx.success({data: { [name]: ctx.db.modules.get(name)} })
 }
 
