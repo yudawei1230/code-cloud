@@ -21,7 +21,6 @@
   "dependencies": {
     "@koa/router": "^10.0.0",
     "antd": "^4.16.7",
-    "eruda-webpack-plugin": "^1.2.0",
     "flat-cache": "^3.0.4",
     "koa": "^2.13.1",
     "koa-mount": "^4.0.0",

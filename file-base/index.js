@@ -13,7 +13,9 @@ const proxyOptions = {
 }
 
 app.use(mount('/api', proxy(proxyOptions)))
-app.use(mount('/rsdk', static(resolve(__dirname, './dist/rsdk'))))
+app.use(mount('/rsdk', static(resolve(__dirname, './dist/rsdk', {
+  gzip: true
+}))))
 .use(static(resolve(__dirname, './storage')))
 .use(router.routes())
 .use(router.allowedMethods())
