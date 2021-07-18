@@ -1,17 +1,14 @@
 import { registerMicroApps, start, initGlobalState } from 'qiankun';
 
-const scriptAttr = [...document.scripts].find(v => v.hasAttribute('rsdk')).attributes
-function getAttr(key) {
-  return scriptAttr[key] ? scriptAttr[key].value : null
-}
-
-const sdkSrc = getAttr('src').replace(/[^\/]+$/, 'main.js')
-
-
-const el = document.createElement('div')
-const initTimer = setInterval(() => {
+const initTimer = setInterval(async () => {
   if(!document.body) return 
   clearInterval(initTimer)
+  const scriptAttr = [...document.scripts].find(v => v.hasAttribute('rsdk')).attributes
+  function getAttr(key) {
+    return scriptAttr[key] ? scriptAttr[key].value : null
+  }
+  const sdkSrc = getAttr('src').replace(/[^\/]+$/, 'main.js')
+  const el = document.createElement('div')
   document.body.appendChild(el)
 
   const rsdkState = initGlobalState({})
@@ -19,7 +16,7 @@ const initTimer = setInterval(() => {
   rsdkState.onGlobalStateChange((state, prev) => {
     window.rsdk = state
   })
-
+  
   registerMicroApps([
     {
       name: process.env.npm_package_name,
@@ -33,8 +30,6 @@ const initTimer = setInterval(() => {
       }
     }
   ]);
-
-  // 启动 qiankun
   start({
     fetch(url, ...args) {
       return window.fetch(url, ...args).then(res => {

@@ -41,7 +41,7 @@ module.exports = {
     module: {
       rules: [
         {
-          test: /\.js|jsx?$/, // jsx/js文件的正则
+          test: /\.js|jsx|tsx?$/, // jsx/js文件的正则
           exclude: /node_modules/, // 排除 node_modules 文件夹
           use: {
             // loader 是 babel

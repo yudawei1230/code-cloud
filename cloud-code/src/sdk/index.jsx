@@ -1,11 +1,15 @@
 import { require as r, define as d } from 'requirejs'
+import { message } from 'antd'
+import React, { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom'
+import useSpotlight from './spotlight/index.tsx'
 import textPlugin from './plugins/text'
 import cssPlugin from './plugins/css'
 import promisePlugin from './plugins/promise'
-import { MODULE_TYPE, CDN }  from '../config/const'
+import { MODULE_TYPE }  from '../config/const'
 import useCodeEditor from './codeEditor'
+import antdCss from 'antd/dist/antd.min.css'
 import style from './index.css'
-
 export async function bootstrap() {}
 
 export async function mount(props) {
@@ -20,7 +24,6 @@ export async function mount(props) {
 
   const ignoreDeps = ['require', 'exports', 'rsdk']
   r.config({
-    paths: CDN,
     waitSeconds: 0
   })
   
@@ -143,8 +146,6 @@ export async function mount(props) {
     return d(deps, callback)
   }
 
-  let REACT, ANTD;
-  
   window.rsdk =  {
     origin,
     container,
@@ -169,16 +170,10 @@ export async function mount(props) {
     },
     exec: (modules, ...options) => rsdk.require(modules).then(data => data?.[0] instanceof Function ? data[0](...options) : data),
     editModule: async function (name) {
-      const open = useCodeEditor(rsdk, { REACT, ANTD })
+      const open = useCodeEditor(rsdk)
       let editor
       const info = await rsdk.getModuleInfo(name)
       if(!info.name) {
-        const msgWrapper = document.createElement("div");
-        rsdk.container.appendChild(dom)
-        const [{ message }] = await ANTD
-        message.config({
-          getContainer: () => msgWrapper
-        })
         return message.error(`查询不到该模块信息「${name}」。`)
       }
       const onSave = async () => {
@@ -208,24 +203,28 @@ export async function mount(props) {
     }
   }
   d('rsdk', () => window.rsdk)
-
-  REACT = rsdk.require(['react', 'react-dom'])
-  ANTD = rsdk.require(['antd', 'css!antd-css'])
-
   setRsdkState(window.rsdk)
   
-  const sdkReq = window.rsdk.exec('spotlight', { inIframe })
-  const [React, ReactDOM] = await REACT
-  const { useEffect, useState } = React
   const root = document.createElement('div')
+  const antdStyle = document.createElement('style')
+  const rootStyle = document.createElement('style')
+  rootStyle.innerHTML = `.view-line,.ant-modal-confirm-title {
+    text-align: left !important;
+  }`
+  antdStyle.innerHTML = antdCss[0][3].sourcesContent[0]
   root.setAttribute('id', 'root')
   container.appendChild(root)
-  
+  container.appendChild(antdStyle)
+  container.appendChild(rootStyle)
+  message.config({
+    getContainer: () => container
+  })
   function App () {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-      sdkReq.then(setLoading.bind(null, false))
+      useSpotlight({ inIframe, rsdk })
+      setLoading(false)
     }, [])
     const classStr= `${style.locals.img} ${loading ? style.locals.loading : ''}`
     

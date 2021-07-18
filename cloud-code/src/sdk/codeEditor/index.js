@@ -1,3 +1,5 @@
+import { message, Modal } from 'antd'
+import React, { useEffect, useRef } from 'react'
 import useLanguage from './languages'
 async function openEditor (rsdk, dom, options) { 
   rsdk.config({
@@ -19,7 +21,7 @@ async function openEditor (rsdk, dom, options) {
   return { monaco, editor }
 }
 
-export default function useCodeEditor (rsdk, { REACT, ANTD }) {
+export default function useCodeEditor (rsdk) {
   return  async (modalOptions = {}, editorOptions= {}) => {
     const { modalStyle = {} } = modalOptions
     const editorStyle = editorOptions.editorStyle
@@ -29,20 +31,19 @@ export default function useCodeEditor (rsdk, { REACT, ANTD }) {
       height: '500px', 
       ...editorStyle
     }
-    const [React] = await REACT
-    const { useRef, useEffect } = React
-    const [{ Modal, message } ]= await ANTD
     
     return new Promise(resolve => {
       const modalWrapper = document.createElement("div");
       rsdk.container.appendChild(modalWrapper)
 
+   
       const modal = Modal.confirm({ 
         title: '编辑模块',
         width: '1200px', 
         height: '600px', 
         ...modalStyle, 
-        ...modalOptions ,
+        ...modalOptions,
+        onCancel: () => rsdk.container.removeChild(modalWrapper),
         getContainer: () => modalWrapper,
         modalRender(children) {
           const containerRef = useRef(null)
