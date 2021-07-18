@@ -113,7 +113,7 @@ export async function mount(props) {
       
       const key = Date.now() +'_'+ String(Math.random()).match(/\d+$/)[0]
       const asyncKey = `promise!${key}`
-      define(key, () => {
+      d(key, () => {
         return rsdk.require(item)
         .then(data => {
           return { ...data[0] }
@@ -207,7 +207,7 @@ export async function mount(props) {
       )).editor
     }
   }
-  define('rsdk', () => window.rsdk)
+  d('rsdk', () => window.rsdk)
 
   REACT = rsdk.require(['react', 'react-dom'])
   ANTD = rsdk.require(['antd', 'css!antd-css'])

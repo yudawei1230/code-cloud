@@ -36,6 +36,23 @@ const initTimer = setInterval(() => {
 
   // 启动 qiankun
   start({
+    fetch(url, ...args) {
+      return window.fetch(url, ...args).then(res => {
+        if(url === sdkSrc) {
+          return res.text().then(text => {
+            return {
+              text() {
+                return `(function(){
+                  var define;
+                  ${text}
+                })()`
+              }
+            }
+          })
+        }
+        return res
+      })
+    },
     sandbox: {  strictStyleIsolation: true }
   });
 }, 50)
