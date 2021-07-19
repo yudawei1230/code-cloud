@@ -1,6 +1,8 @@
 import { message, Modal } from 'antd'
 import React, { useEffect, useRef } from 'react'
 import useLanguage from './languages'
+import editorCss from '!!raw-loader!../editor.css';
+
 async function openEditor (rsdk, dom, options) { 
   rsdk.config({
     paths: {
@@ -35,12 +37,11 @@ export default function useCodeEditor (rsdk) {
     return new Promise(resolve => {
       const modalWrapper = document.createElement("div");
       rsdk.container.appendChild(modalWrapper)
-
-   
+      
       const modal = Modal.confirm({ 
         title: '编辑模块',
         width: '1200px', 
-        height: '600px', 
+        height: '80vh', 
         ...modalStyle, 
         ...modalOptions,
         onCancel: () => rsdk.container.removeChild(modalWrapper),
@@ -48,14 +49,22 @@ export default function useCodeEditor (rsdk) {
         modalRender(children) {
           const containerRef = useRef(null)
           useEffect(() => {
+            const title = document.createElement('div')
+            title.className = 'code-title'
+            title.innerText = editorOptions.name
+            const editorEl = document.createElement('div')
+            editorEl.className = 'code-content'
             const content = containerRef.current.querySelector('.ant-modal-confirm-content')
+            content.appendChild(editorEl)
             const languageOptions = useLanguage(rsdk, 'js')
             Object.assign(content.style, style)
-            openEditor(rsdk, content, {
+            openEditor(rsdk, editorEl, {
               ...editorOptions, 
               editorStyle: undefined,
               ...languageOptions
             }).then(({ monaco, editor }) => {
+              content.insertBefore(title, editorEl)
+              
               editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, async function() {
                 editor.setValue(await languageOptions.handler(editor.getValue()))
                 await editorOptions.onSave()
@@ -71,7 +80,12 @@ export default function useCodeEditor (rsdk) {
             })
           }, [])
           
-          return <div ref={containerRef} children={children}/> 
+          return <div ref={containerRef}>
+            <style>{editorCss}</style>
+            <div className="cloud-editor">
+              {children}
+            </div>
+          </div>
         }
       })
     })

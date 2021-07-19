@@ -198,7 +198,7 @@ export async function mount(props) {
               await onSave()
             }
         },
-        { value: info.code, onSave }
+        { value: info.code, onSave, name }
       )).editor
     }
   }
@@ -208,9 +208,6 @@ export async function mount(props) {
   const root = document.createElement('div')
   const antdStyle = document.createElement('style')
   const rootStyle = document.createElement('style')
-  rootStyle.innerHTML = `.view-line,.ant-modal-confirm-title {
-    text-align: left !important;
-  }`
   antdStyle.innerHTML = antdCss[0][3].sourcesContent[0]
   root.setAttribute('id', 'root')
   container.appendChild(root)
