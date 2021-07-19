@@ -13,7 +13,7 @@ import style from './index.css'
 export async function bootstrap() {}
 
 export async function mount(props) {
-  const { setRsdkState, container, origin, inIframe } = props
+  const { setWindowState, container, origin, inIframe } = props
   textPlugin(d, r)
   cssPlugin(d, r)
   promisePlugin(d, r)
@@ -152,6 +152,7 @@ export async function mount(props) {
     get context() {
       return r.s.contexts._
     },
+    setWindowState,
     getModuleInfo: (name) => {
       return requestModuleInfo(name).then(({ fileId, type, url, noCache }) => {
         if(type !== 'file' ) return { url }
@@ -203,7 +204,7 @@ export async function mount(props) {
     }
   }
   d('rsdk', () => window.rsdk)
-  setRsdkState(window.rsdk)
+  setWindowState({ rsdk: window.rsdk })
   
   const root = document.createElement('div')
   const antdStyle = document.createElement('style')

@@ -11,10 +11,12 @@ const initTimer = setInterval(async () => {
   const el = document.createElement('div')
   document.body.appendChild(el)
 
-  const rsdkState = initGlobalState({})
-  
-  rsdkState.onGlobalStateChange((state, prev) => {
-    window.rsdk = state
+  const windowState = initGlobalState({})
+  const originWindow = window
+  windowState.onGlobalStateChange((state, prev) => {
+    for(const key in state) {
+      originWindow[key] = state[key]
+    }
   })
   
   registerMicroApps([
@@ -26,7 +28,7 @@ const initTimer = setInterval(async () => {
       props: {
         inIframe: self !== top,
         origin: getAttr('data-origin')?.replace?.(/\/?$/, ''),
-        setRsdkState: rsdkState.setGlobalState
+        setWindowState: windowState.setGlobalState
       }
     }
   ]);
