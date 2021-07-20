@@ -53,7 +53,7 @@ function sort(sortList, inputStr) {
     });
 }
 
-function Spotlight({ inIframe, rsdk }) {
+function Spotlight({ inIframe, rsdk, wrapperRef }) {
   const [isActive, setIsActive] = useState(false);
 
   const blur = (timeout = 100) => {
@@ -188,6 +188,10 @@ function Spotlight({ inIframe, rsdk }) {
     setSelectedIndex(0);
   }, [inputValue, flatRoutes]);
 
+  useEffect(() => {
+    wrapperRef.current = () => setIsActive(true)
+  })
+
   if (!isActive) return <></>;
 
   return (
@@ -244,9 +248,10 @@ function Spotlight({ inIframe, rsdk }) {
   );
 }
 
-export default function ({ rsdk, inIframe }) {
+export default function ({ rsdk, inIframe, ref }) {
   const spotLightWrapper = document.createElement("div");
   rsdk.container.appendChild(spotLightWrapper)
+  ReactDom.render(<Spotlight rsdk={rsdk} inIframe={inIframe} wrapperRef={ref} />, spotLightWrapper);
 
-  ReactDom.render(<Spotlight rsdk={rsdk} inIframe={inIframe} />, spotLightWrapper);
+  return ref
 }
