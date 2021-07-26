@@ -11,6 +11,8 @@ module.exports = {
     },
     devServer: {
       port: 7831,
+      disableHostCheck: true,
+      compress: true,
       headers: {
         // 保证子应用的资源支持跨域，在线上后需要保证子应用的资源在主应用的环境中加载不会存在跨域问题（**也需要限制范围注意安全问题**）
         'Access-Control-Allow-Origin': '*',

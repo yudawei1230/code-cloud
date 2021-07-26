@@ -14,10 +14,6 @@
   height: 30px;
 }
 
-.loading {
-  animation: roll 1s linear infinite;
-}
-
 @keyframes roll {
   from {
     transform: rotate(0deg)

@@ -1,4 +1,11 @@
 import { registerMicroApps, start, initGlobalState } from 'qiankun';
+import layx from '!!raw-loader!./layx.js'
+import layxCss from '!!raw-loader!./layx.css'
+
+eval(layx)
+const layxStyle = document.createElement('style')
+layxStyle.innerHTML = layxCss
+document.head.appendChild(layxStyle)
 
 const initTimer = setInterval(async () => {
   if(!document.body) return 
@@ -12,6 +19,7 @@ const initTimer = setInterval(async () => {
   document.body.appendChild(el)
 
   const windowState = initGlobalState({})
+  
   const originWindow = window
   windowState.onGlobalStateChange((state, prev) => {
     for(const key in state) {
@@ -28,7 +36,7 @@ const initTimer = setInterval(async () => {
       props: {
         inIframe: self !== top,
         origin: getAttr('data-origin')?.replace?.(/\/?$/, ''),
-        setWindowState: windowState.setGlobalState
+        setWindowState: windowState.setGlobalState,
       }
     }
   ]);
@@ -47,10 +55,10 @@ const initTimer = setInterval(async () => {
             }
           })
         }
+        
         return res
       })
-    },
-    sandbox: {  strictStyleIsolation: true }
+    }
   });
 }, 50)
 

@@ -21,6 +21,8 @@ module.exports = {
       port: 7832,
       contentBase: resolve('public'),
       injectClient: false,
+      compress: true,
+      disableHostCheck: true,
       proxy: {
         "/rsdk": {
           target: "http://127.0.0.1:7832",
@@ -28,7 +30,7 @@ module.exports = {
         },
         "/sdk.js": {
           target: "http://127.0.0.1:7831",
-        },
+        }
       },
       headers: {
         // 保证子应用的资源支持跨域，在线上后需要保证子应用的资源在主应用的环境中加载不会存在跨域问题（**也需要限制范围注意安全问题**）
